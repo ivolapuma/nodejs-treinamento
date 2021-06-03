@@ -28,8 +28,8 @@ const server = http.createServer(
 // console.log(server);
 
 // subindo o servidor...
-// server.listen(3000 /*porta http*/, ()=>console.log('Servidor rodando na porta 3000...'));
-server.listen(3000 /*porta http*/);
+server.listen(3000 /*porta http*/, ()=>console.log('Servidor rodando na porta 3000...'));
+// server.listen(3000 /*porta http*/);
 
 console.log('FIM DO SCRIPT');
 
