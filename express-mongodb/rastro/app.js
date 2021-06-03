@@ -1,6 +1,31 @@
 const express = require('express');
 // console.log(`express: ${typeof(express)} | constructor:${express.constructor.name}`);
 
+// configuração do Mongoose
+const mongoose = require('mongoose');
+
+// para fazer conexão com o MongoDB, através do Mongoose
+let conexao = mongoose.connect(
+    'mongodb://localhost:27017/rastro-dev', // string de conexão
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true
+    }
+);
+console.log(`conexao: ${typeof(conexao)} | constructor: ${conexao.constructor.name}`);
+
+// classe Schema do Mongoose permite definir a estrutura de uma coleção no MongoDB
+const Schema = mongoose.Schema;
+console.log(`Schema: ${typeof(Schema)} | constructor: ${Schema.constructor.name}`);
+
+// Schema(
+//     {
+//         codigoRastreador
+//     }
+// );
+
+
 const app = express();
 // console.log(`app: ${typeof(app)} | constructor:${app.constructor.name}`);
 
