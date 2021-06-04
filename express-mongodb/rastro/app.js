@@ -19,12 +19,20 @@ console.log(`conexao: ${typeof(conexao)} | constructor: ${conexao.constructor.na
 const Schema = mongoose.Schema;
 console.log(`Schema: ${typeof(Schema)} | constructor: ${Schema.constructor.name}`);
 
-// Schema(
-//     {
-//         codigoRastreador
-//     }
-// );
+// Schema() define a estrutura da coleção
+const rastreadorSchema = Schema(
+    {
+        codigoRastreador: { type: String, required: true, index: { unique: true } },
+        placaVeiculo: { type: String, required: true },
+        cpfCliente: { type: String, required: true }
+    }
+);
+console.log(`rastreadorSchema: ${typeof(rastreadorSchema)} | constructor: ${rastreadorSchema.constructor.name}`);
 
+// model() cria a coleção
+mongoose.model('rastreadores' /*nome da coleção*/, rastreadorSchema);
+
+mongoose.disconnect();
 
 const app = express();
 // console.log(`app: ${typeof(app)} | constructor:${app.constructor.name}`);
