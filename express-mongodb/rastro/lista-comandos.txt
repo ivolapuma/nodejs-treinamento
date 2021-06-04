@@ -36,3 +36,7 @@ $ npm install mongoose
 > db.rastreadores.ensureIndex( { codigoRastreador: 1 }, { unique: true } )
 > db.rastreadores.getIndexes()
 
+
+-- instalando o 'consign'
+na pasta "rastro"
+$ npm install consign
