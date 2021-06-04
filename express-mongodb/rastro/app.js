@@ -27,10 +27,12 @@ const rastreadorSchema = Schema(
         cpfCliente: { type: String, required: true }
     }
 );
+rastreadorSchema.index({ codigoRastreador: 1, type: 1 });
 console.log(`rastreadorSchema: ${typeof(rastreadorSchema)} | constructor: ${rastreadorSchema.constructor.name}`);
 
 // model() cria a coleção
-mongoose.model('rastreadores' /*nome da coleção*/, rastreadorSchema);
+const Rastreador = mongoose.model('rastreadores' /*nome da coleção*/, rastreadorSchema);
+console.log(`Rastreador: ${typeof(Rastreador)} | constructor: ${Rastreador.constructor.name}`);
 
 mongoose.disconnect();
 
@@ -61,10 +63,56 @@ app.get(
 app.post(
     '/rastreador',
     (request, response) => {
+
         console.log('Rota /rastreador chamada...');
         console.log(`request.body: ${request.body}`);
         console.log(request.body);
-        response.send('OK');
+
+        // validar o request.body...
+
+        // criar o documento na coleção 'rastreadores'
+        const rastreador = new Rastreador(request.body);
+        console.log(`rastreador: ${rastreador} | constructor: ${rastreador.constructor.name}`);
+        console.log(rastreador);
+        
+        mongoose.connect(
+            'mongodb://localhost:27017/rastro-dev', // string de conexão
+            {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                useCreateIndex: true
+            }
+        ).then(
+            (resultado) => {
+                console.log('Conexao com MongoDB realizada.');
+                console.log(resultado);
+        
+                const resultadoCreate = Rastreador.create(rastreador)
+                    .then((resultado) => {
+                        console.log(`resultado do then: ${resultado} | constructor: ${resultado.constructor.name}`);
+                        console.log(resultado);
+                        console.log(`Rastreador ${rastreador.codigoRastreador} cadastrado com sucesso.`);
+                        mongoose.disconnect();
+                        response.status(200).send(resultado);
+                    })
+                    .catch((erro) => {
+                        console.log(`erro do create: ${erro} | constructor: ${erro.constructor.name}`);
+                        console.log(erro);
+                        console.log(`Erro ao cadastrar o Rastreador: ${erro}`);
+                        mongoose.disconnect();
+                        response.status(500).send(`Erro ao cadastrar o Rastreador: ${erro}`);
+                    });
+                ;
+                console.log(`resultado do create: ${typeof(resultadoCreate)} | constructor: ${resultadoCreate.constructor.name}`);
+            }
+        ).catch(
+            (erro) => {
+                console.log(`erro do connection: ${erro} | constructor: ${erro.constructor.name}`);
+                console.log(erro);
+                console.log(`Erro ao conectar no banco MongoDB: ${erro}`);
+                response.status(500).send(`Erro ao conectar no banco MongoDB: ${erro}`);
+            }
+        );
     }
 );
 

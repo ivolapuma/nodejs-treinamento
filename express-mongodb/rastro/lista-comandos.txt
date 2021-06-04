@@ -29,3 +29,10 @@ e no arquivo package.json, mudar a linha que tem o atributo "scripts" / "start":
 -- instalando o Mongoose
 na pasta "rastro"
 $ npm install mongoose
+
+
+-- no MongoDB (no CLI do MongoDB), após criar a coleção 'rastreadores', para criar o indice pelo campo 'codigoRastreador':
+-- limpar a coleção: db.rastreadores.remove()
+> db.rastreadores.ensureIndex( { codigoRastreador: 1 }, { unique: true } )
+> db.rastreadores.getIndexes()
+
