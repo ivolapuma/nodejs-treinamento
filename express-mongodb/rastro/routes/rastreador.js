@@ -26,5 +26,13 @@ module.exports = (app) => {
         '/rastreador',
         app.controllers.rastreador.alterar
     );
+
+    // criando rota para excluir os dados do rastreador
+    // DELETE
+    // rota '/rastreador/:codigoRastreador'
+    app.delete(
+        '/rastreador/:codigoRastreador',
+        app.controllers.rastreador.excluir
+    )
 }
 

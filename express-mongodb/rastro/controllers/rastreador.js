@@ -131,6 +131,70 @@ module.exports = (app) => {
                 console.log(`Erro ao conectar no banco MongoDB: ${erro}`);
                 response.status(500).send(`Erro ao conectar no banco MongoDB: ${erro}`);
             });
+        },
+
+        excluir(request, response) {
+            console.log('Rota DELETE /rastreador chamada...');
+            console.log('request.params:');
+            console.log(request.params);
+
+            mongoose.connect(
+                'mongodb://localhost:27017/rastro-dev', // string de conexão
+                {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true,
+                    useCreateIndex: true
+                }
+            )
+            .then(() => {
+                const Rastreamento = app.models.rastreamento;
+                const Rastreador = app.models.rastreador;
+                Rastreamento.deleteMany(
+                    { codigoRastreador: request.params.codigoRastreador }
+                )
+                .then((resultadoDeleteRastreamento) => {
+                    console.log(`resultadoDeleteRastreamento:`);
+                    console.log(resultadoDeleteRastreamento);
+
+                    Rastreador.deleteOne(
+                        { codigoRastreador: request.params.codigoRastreador }
+                    )
+                    .then((resultadoDeleteRastreador) => {
+                        console.log(`resultadoDeleteRastreador:`);
+                        console.log(resultadoDeleteRastreador);
+                        mongoose.disconnect();
+                        if (resultadoDeleteRastreador.deletedCount > 0) {
+                            if (resultadoDeleteRastreamento.deletedCount == 1) {
+                                response.status(200).send(`Foi excluído ${resultadoDeleteRastreamento.deletedCount} documento de rastreamento e o documento do Rastreador.`);
+                            } else {
+                                response.status(200).send(`Foram excluídos ${resultadoDeleteRastreamento.deletedCount} documentos de rastreamento e o documento do Rastreador.`);
+                            }                            
+                        } else {
+                            response.status(404).send(`Rastreador não localizado no cadastro.`);
+                        }
+                    })
+                    .catch((erro) => {
+                        console.log(`Erro ao excluir o documento do Rastreador: ${erro}`);
+                        console.log(erro);
+                        mongoose.disconnect();
+                        response.status(500).send(`Erro ao excluir o documento do Rastreador: ${erro}`);    
+                    });
+                    
+                })
+                .catch((erro) => {
+                    console.log(`Erro ao excluir os documentos de rastreamento do Rastreador: ${erro}`);
+                    console.log(erro);
+                    mongoose.disconnect();
+                    response.status(500).send(`Erro ao excluir os documentos de rastreamento do Rastreador: ${erro}`);
+                });
+
+            })
+            .catch((erro) => {
+                console.log(`Erro ao conectar no banco MongoDB: ${erro}`);
+                console.log(erro);
+                response.status(500).send(`Erro ao conectar no banco MongoDB: ${erro}`);
+            });
+
         }
     }
 
