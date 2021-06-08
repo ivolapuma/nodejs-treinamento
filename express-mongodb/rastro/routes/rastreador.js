@@ -18,5 +18,13 @@ module.exports = (app) => {
         '/rastreador',
         app.controllers.rastreador.cadastrar
     );
+
+    // criando rota para alterar rastreador
+    // PUT
+    // rota '/rastreador'
+    app.put(
+        '/rastreador',
+        app.controllers.rastreador.alterar
+    );
 }
 
