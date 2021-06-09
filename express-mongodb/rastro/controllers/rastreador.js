@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const usuario = require('../models/usuario');
 
 module.exports = (app) => {
 
@@ -10,66 +12,99 @@ module.exports = (app) => {
             console.log('Rota POST /rastreador chamada...');
             console.log(`request.body: ${request.body}`);
             console.log(request.body);
-    
-            // validar o request.body...
-    
-            const Rastreador = app.models.rastreador;
+            console.log(`request.headers.authorization: ${request.headers.authorization}`);
 
-            // criar o documento na coleção 'rastreadores'            
-            const rastreador = new Rastreador(request.body);
-            // console.log(`rastreador: ${rastreador} | constructor: ${rastreador.constructor.name}`);
-            // console.log(rastreador);
-            
-            mongoose.connect(
-                app.constantes.db.connection,
-                app.constantes.db.connectionParams
-            )
-            .then(
-                (resultado) => {
+            // validar o token
+            let payload;
+            try {
+                payload = jwt.verify(request.headers.authorization, app.constantes.seguranca.chaveJWT);
+            } catch(erro) {
+                console.log(erro);
+            }
+
+            console.log('payload extraido da verificação do token:');
+            console.log(payload);    
     
-                    // uma forma de cadastrar o documento, com o create() a partir do tipo Rastreador
-                    const resultadoCreate = Rastreador.create(rastreador)
-                        .then((resultado) => {
-                            console.log(`resultado do then: ${resultado} | constructor: ${resultado.constructor.name}`);
-                            console.log(resultado);
-                            console.log(`Rastreador ${rastreador.codigoRastreador} cadastrado com sucesso.`);
-                            mongoose.disconnect();
-                            response.status(200).send(resultado);
+            if (payload != undefined) {
+                mongoose.connect(
+                    app.constantes.db.connection,
+                    app.constantes.db.connectionParams
+                )
+                .then(
+                    (resultado) => {
+    
+                        const Usuario = app.models.usuario;
+                        Usuario.find( { login: payload.login } )
+                        .then((usuariosEncontrados) => {
+    
+                            if (usuariosEncontrados.length > 0) {
+    
+                                const Rastreador = app.models.rastreador;
+    
+                                // criar o documento na coleção 'rastreadores'            
+                                const rastreador = new Rastreador(request.body);
+                                // console.log(`rastreador: ${rastreador} | constructor: ${rastreador.constructor.name}`);
+                                // console.log(rastreador);        
+            
+                                // uma forma de cadastrar o documento, com o create() a partir do tipo Rastreador
+                                const resultadoCreate = Rastreador.create(rastreador)
+                                    .then((resultado) => {
+                                        console.log(`resultado do then: ${resultado} | constructor: ${resultado.constructor.name}`);
+                                        console.log(resultado);
+                                        console.log(`Rastreador ${rastreador.codigoRastreador} cadastrado com sucesso.`);
+                                        mongoose.disconnect();
+                                        response.status(200).send(resultado);
+                                    })
+                                    .catch((erro) => {
+                                        console.log(`erro do create: ${erro} | constructor: ${erro.constructor.name}`);
+                                        console.log(erro);
+                                        console.log(`Erro ao cadastrar o Rastreador: ${erro}`);
+                                        mongoose.disconnect();
+                                        response.status(500).send(`Erro ao cadastrar o Rastreador: ${erro}`);
+                                    });
+                
+                                // outra forma de cadastrar o documento, com save() a partir do objeto rastreador
+                                // const resultadoCreate = rastreador.save()
+                                // .then((resultado) => {
+                                //     console.log(`resultado do then: ${resultado} | constructor: ${resultado.constructor.name}`);
+                                //     console.log(resultado);
+                                //     console.log(`Rastreador ${rastreador.codigoRastreador} cadastrado com sucesso.`);
+                                //     mongoose.disconnect();
+                                //     response.status(200).send(resultado);
+                                // })
+                                // .catch((erro) => {
+                                //     console.log(`erro do create: ${erro} | constructor: ${erro.constructor.name}`);
+                                //     console.log(erro);
+                                //     console.log(`Erro ao cadastrar o Rastreador: ${erro}`);
+                                //     mongoose.disconnect();
+                                //     response.status(500).send(`Erro ao cadastrar o Rastreador: ${erro}`);
+                                // });
+                                        
+                            } else {
+                                console.log(`Token invalido. payload.login: ${payload.login}`);
+                                mongoose.disconnect();
+                                response.status(401).send(`Token invalido.`);    
+                            }
                         })
                         .catch((erro) => {
-                            console.log(`erro do create: ${erro} | constructor: ${erro.constructor.name}`);
-                            console.log(erro);
-                            console.log(`Erro ao cadastrar o Rastreador: ${erro}`);
+                            console.log(`Erro ao verificar usuario no cadastro: ${erro}`);
                             mongoose.disconnect();
-                            response.status(500).send(`Erro ao cadastrar o Rastreador: ${erro}`);
+                            response.status(500).send(`Erro ao verificar usuario no cadastro: ${erro}`);
                         });
-    
-                    // outra forma de cadastrar o documento, com save() a partir do objeto rastreador
-                    // const resultadoCreate = rastreador.save()
-                    // .then((resultado) => {
-                    //     console.log(`resultado do then: ${resultado} | constructor: ${resultado.constructor.name}`);
-                    //     console.log(resultado);
-                    //     console.log(`Rastreador ${rastreador.codigoRastreador} cadastrado com sucesso.`);
-                    //     mongoose.disconnect();
-                    //     response.status(200).send(resultado);
-                    // })
-                    // .catch((erro) => {
-                    //     console.log(`erro do create: ${erro} | constructor: ${erro.constructor.name}`);
-                    //     console.log(erro);
-                    //     console.log(`Erro ao cadastrar o Rastreador: ${erro}`);
-                    //     mongoose.disconnect();
-                    //     response.status(500).send(`Erro ao cadastrar o Rastreador: ${erro}`);
-                    // });
-                
-                }
-            ).catch(
-                (erro) => {
-                    console.log(`erro do connection: ${erro} | constructor: ${erro.constructor.name}`);
-                    console.log(erro);
-                    console.log(`Erro ao conectar no banco MongoDB: ${erro}`);
-                    response.status(500).send(`Erro ao conectar no banco MongoDB: ${erro}`);
-                }
-            );
+                            
+                    }
+                ).catch(
+                    (erro) => {
+                        console.log(`erro do connection: ${erro} | constructor: ${erro.constructor.name}`);
+                        console.log(erro);
+                        console.log(`Erro ao conectar no banco MongoDB: ${erro}`);
+                        response.status(500).send(`Erro ao conectar no banco MongoDB: ${erro}`);
+                    }
+                );    
+            } else {
+                console.log(`Token invalido.`);
+                response.status(401).send(`Token invalido.`);    
+            }
         },
 
         alterar(request, response) {
