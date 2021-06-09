@@ -12,6 +12,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-consign().include('models').then('controllers').then('routes').into(app);
+consign()
+    .include('constantes')
+    .then('models')
+    .then('controllers')
+    .then('routes')
+    .into(app);
+
+console.log(app.constantes.db.connection);
+console.log(app.constantes.db.connectionParams);
 
 app.listen(3000 /*porta*/, ()=>console.log('Servidor rodando na porta 3000...'));

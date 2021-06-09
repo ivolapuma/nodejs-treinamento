@@ -21,12 +21,8 @@ module.exports = (app) => {
             // console.log(rastreador);
             
             mongoose.connect(
-                'mongodb://localhost:27017/rastro-dev', // string de conexão
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                    useCreateIndex: true
-                }
+                app.constantes.db.connection,
+                app.constantes.db.connectionParams
             )
             .then(
                 (resultado) => {
@@ -85,12 +81,8 @@ module.exports = (app) => {
             const Rastreador = app.models.rastreador;
 
             mongoose.connect(
-                'mongodb://localhost:27017/rastro-dev', // string de conexão
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                    useCreateIndex: true
-                }
+                app.constantes.db.connection,
+                app.constantes.db.connectionParams
             )
             .then(() => {
                 // a função updateOne() alterar um documento da coleção
@@ -139,12 +131,8 @@ module.exports = (app) => {
             console.log(request.params);
 
             mongoose.connect(
-                'mongodb://localhost:27017/rastro-dev', // string de conexão
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                    useCreateIndex: true
-                }
+                app.constantes.db.connection,
+                app.constantes.db.connectionParams
             )
             .then(() => {
                 const Rastreamento = app.models.rastreamento;
