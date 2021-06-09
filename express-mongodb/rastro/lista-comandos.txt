@@ -49,3 +49,7 @@ $ npm install properties-reader
 -- instalando o 'bcrypt'
 na pasta "rastro"
 $ npm install bcrypt
+
+-- instalando o 'jsonwebtoken'
+na pasta "rastro"
+$ npm install jsonwebtoken
