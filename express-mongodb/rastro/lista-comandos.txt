@@ -40,3 +40,12 @@ $ npm install mongoose
 -- instalando o 'consign'
 na pasta "rastro"
 $ npm install consign
+
+
+-- instalando o 'properties-reader'
+na pasta "rastro"
+$ npm install properties-reader
+
+-- instalando o 'bcrypt'
+na pasta "rastro"
+$ npm install bcrypt
