@@ -22,4 +22,4 @@ consign()
 console.log(app.constantes.db.connection);
 console.log(app.constantes.db.connectionParams);
 
-app.listen(3000 /*porta*/, ()=>console.log('Servidor rodando na porta 3000...'));
+app.listen(app.constantes.app.porta /*porta*/, ()=>console.log(`Servidor rodando na porta ${app.constantes.app.porta}...`));
